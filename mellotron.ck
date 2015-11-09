@@ -1,31 +1,42 @@
+// command line args
+string sampleName;
+int deviceID;
+60 => int centerNote;
+
+if(me.args() < 2) {
+  <<<"Please provide arguments for sample and MIDI device!">>>;
+	me.exit();
+}
+
+me.arg(0) => sampleName;
+Std.atoi(me.arg(1)) => deviceID;
+
+if(me.args() > 2) {
+  Std.atoi(me.arg(2)) => centerNote;
+}
+
 // MIDI setup
 MidiIn min;
 MidiMsg msg;
-min.open(1); // hardcoding device for now - config file?
+min.open(deviceID);
 
-// choose a file, hardcoding for now
-me.sourceDir() + "samples/flute.wav" => string filename;
-
-//the patch
+// load sample and set up patch
+me.sourceDir() + "samples/" + sampleName => string filename;
 SndBuf buf => Envelope env => dac;
-
-// load the sample
 filename => buf.read;
 
-// set some stuff
-0.2 => buf.gain;
+// some more setup
+0.3 => buf.gain; // not too loud
 1 => buf.loop;
 0 => buf.pos;
 
-// for now, we will assume that the sample played back at its natural speed
-// is middle C (MIDI value 60, actual frequency 261.625565)
-
-// so to determine playback rate, we will divide Std.mtof(input_note) by Std.mtof(60).
-// maybe the denominator will later be set in a config file, along with other stuff.
-
 fun void setRate(int midiNote) {
-  Std.mtof(midiNote) / Std.mtof(60) => buf.rate;
+  Std.mtof(midiNote) / Std.mtof(centerNote) => buf.rate;
 }
+
+// TODO: include a flag where user can decide whether sample continuously loops
+// regardless of keyOn() / keyOff(), or if the sample restarts at position 0 with
+// each key press. right now it just continuously loops.
 
 while(true) {
 
