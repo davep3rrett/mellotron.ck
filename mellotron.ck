@@ -5,7 +5,7 @@ int deviceID;
 
 if(me.args() < 2) {
   <<<"Please provide arguments for sample and MIDI device!">>>;
-	me.exit();
+  me.exit();
 }
 
 me.arg(0) => sampleName;
@@ -41,22 +41,21 @@ fun void setRate(int midiNote) {
 while(true) {
 
   min => now;
-	while(min.recv(msg)) {
+  while(min.recv(msg)) {
     setRate(msg.data2);
 
-  // this is kind of a wack hack - checking if the velocity is 0 or not
-	// to toggle keyOn() and keyOff(). i should really be using the status byte
-	// to check for note on/off, but this approach is "channel agnostic".
-	// i'll dig into the documentation to see if ChucK has a built in way
-	// of interpreting the status byte. but this works for now ;)
+    // this is kind of a wack hack - checking if the velocity is 0 or not
+    // to toggle keyOn() and keyOff(). i should really be using the status byte
+    // to check for note on/off, but this approach is "channel agnostic".
+    // i'll dig into the documentation to see if ChucK has a built in way
+    // of interpreting the status byte. but this works for now ;)
 	
-  if(msg.data3 == 0) {
-		  env.keyOff();
-		}
-		else if(msg.data3 != 0) {
-		  env.keyOn();
-		}
+    if(msg.data3 == 0) {
+      env.keyOff();
+    }
+    else if(msg.data3 != 0) {
+      env.keyOn();
+    }
   }
-
   10::ms => now;
 }
