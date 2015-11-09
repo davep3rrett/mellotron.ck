@@ -6,7 +6,7 @@ This project aims to provide a simple mellotron emulator to be played using a ke
 
 Samples need to be stored in a directory named "samples", which should live in the same directory that `mellotron.ck` is being run from.
 
-`mellotron.ck` is intended to be used on a Linux system with JACK running. This document assumes you aready have JACK and ChucK installed and know something about using them.
+`mellotron.ck` is intended to be used on a Linux system with JACK running. This document assumes you aready have JACK and ChucK installed and know something about using them. `mellotron.ck` should probably also work on Windows or OS X, but configuring the MIDI device, etc. will work a little differently, but if you're feeling ambitious you can probably figure out how to make it work.
 
 Telling `mellotron.ck` which MIDI device to take input from requires a little bit of work on the part of the user:
 
