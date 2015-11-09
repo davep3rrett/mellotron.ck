@@ -1,3 +1,8 @@
+// MIDI setup
+MidiIn min;
+MidiMsg msg;
+min.open(1); // hardcoding device for now - config file?
+
 // choose a file, hardcoding for now
 me.sourceDir() + "samples/flute.wav" => string filename;
 
@@ -12,9 +17,6 @@ filename => buf.read;
 1 => buf.loop;
 0 => buf.pos;
 
-// turn the envelope on
-env.keyOn();
-
 // for now, we will assume that the sample played back at its natural speed
 // is middle C (MIDI value 60, actual frequency 261.625565)
 
@@ -25,8 +27,25 @@ fun void setRate(int midiNote) {
   Std.mtof(midiNote) / Std.mtof(60) => buf.rate;
 }
 
-// test some random midi notes
 while(true) {
-  setRate(Math.random2(50, 70));
-  3::second => now;
+
+  min => now;
+	while(min.recv(msg)) {
+    setRate(msg.data2);
+
+  // this is kind of a wack hack - checking if the velocity is 0 or not
+	// to toggle keyOn() and keyOff(). i should really be using the status byte
+	// to check for note on/off, but this approach is "channel agnostic".
+	// i'll dig into the documentation to see if ChucK has a built in way
+	// of interpreting the status byte. but this works for now ;)
+	
+  if(msg.data3 == 0) {
+		  env.keyOff();
+		}
+		else if(msg.data3 != 0) {
+		  env.keyOn();
+		}
+  }
+
+  10::ms => now;
 }
